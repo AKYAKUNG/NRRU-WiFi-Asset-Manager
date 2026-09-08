@@ -1,0 +1,178 @@
+/* src/index/css/Header.css */
+
+/* ==========================================================================
+   1. HEADER BASE & GLASSMORPHISM (พื้นหลังกระจกฝ้า)
+   ========================================================================== */
+.header-glass {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dark .header-glass {
+  background: rgba(15, 23, 42, 0.85);
+}
+
+/* ==========================================================================
+   2. BRANDING & LOGO ANIMATION (โลโก้ NRRU)
+   ========================================================================== */
+
+.dark .brand-nrru {
+  color: #ffffff;
+}
+
+.group:hover .brand-nrru {
+  letter-spacing: 0.05em;
+  transform: translateY(-1px) scale(1.04);
+  text-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
+}
+
+.dark .group:hover .brand-nrru {
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+}
+
+/* ==========================================================================
+   3. REAL-TIME STATUS INDICATOR (ไฟสถานะ Real-time)
+   ========================================================================== */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.15);
+  }
+}
+
+.header-status-pulse {
+  animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ==========================================================================
+   4. DARK / LIGHT MODE TOGGLE SWITCHER (สวิตช์สลับธีม - ปุ่มแรกทางขวา)
+   ========================================================================== */
+.theme-toggle-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 58px;
+  height: 32px;
+  padding: 4px;
+  background-color: #e2e8f0;
+  border-radius: 9999px;
+  cursor: pointer;
+  border: 1px solid #cbd5e1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark .theme-toggle-btn {
+  background-color: #1e293b;
+  border-color: #334155;
+}
+
+.theme-toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  background: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+}
+
+.dark .theme-toggle-thumb {
+  transform: translateX(26px);
+  background: #2563eb;
+}
+
+.theme-icon-sun {
+  color: #f59e0b;
+}
+
+.theme-icon-moon {
+  color: #ffffff;
+}
+
+.theme-toggle-btn:hover {
+  transform: scale(1.05);
+}
+
+.theme-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* ==========================================================================
+   5. ACTION BUTTON ANIMATIONS (ปุ่มแจ้งปัญหา / ปุ่มเข้าสู่ระบบ)
+   ========================================================================== */
+
+/* แสงวิ่งผ่านปุ่มเวลาชี้เมาส์ (Shimmer Shine Effect) */
+.btn-header-shine {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-header-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: rotate(30deg) translateY(-100%);
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-header-shine:hover::after {
+  transform: rotate(30deg) translateY(100%);
+}
+
+/* ปุ่มแจ้งปัญหา: เงากะพริบเรียกร้องสายตา (Pulse Glow Alert) */
+@keyframes alert-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 14px 3px rgba(244, 63, 94, 0.35);
+  }
+}
+
+.btn-report-pulse {
+  animation: alert-glow 2.5s infinite ease-in-out;
+}
+
+/* ปุ่มเข้าสู่ระบบ: ยกตัวนวล + เงารัศมีสีฟ้า (Blue Glow) */
+.btn-login-hover {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-login-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px -4px rgba(37, 99, 235, 0.45);
+}
+
+.btn-login-hover:active {
+  transform: translateY(0) scale(0.97);
+}
+
+/* อนิเมชันไอคอนเด้ง/หมุนเล็กน้อยเวลาชี้เมาส์ที่ปุ่ม */
+.btn-header-shine:hover .btn-icon-animate {
+  transform: scale(1.18) rotate(-10deg);
+}
+
+.btn-icon-animate {
+  transition: transform 0.3s ease;
+}
