@@ -1,11 +1,26 @@
 <?php
+header('Content-Type: application/json; charset=utf-8');
 require_once 'db.php'; // ดึงการเชื่อมต่อฐานข้อมูลมาใช้
 
 try {
-    // ดึงข้อมูล AP ทั้งหมด (เดี๋ยวเราค่อยมา Join ตารางเพื่อให้ได้ชื่อสถานที่ภายหลัง)
-    $stmt = $conn->prepare("SELECT * FROM access_points ORDER BY id DESC");
+    // JOIN ตาราง locations และ device_models เพื่อดึงชื่ออาคาร ยี่ห้อ และรุ่น
+    $sql = "SELECT 
+                ap.*, 
+                l.building, 
+                l.floor, 
+                l.department,
+                l.floor_plan_image,
+                m.brand, 
+                m.model,
+                m.device_type
+            FROM access_points ap
+            LEFT JOIN locations l ON ap.location_id = l.id
+            LEFT JOIN device_models m ON ap.model_id = m.id
+            ORDER BY ap.id DESC";
+
+    $stmt = $conn->prepare($sql);
     $stmt->execute();
-    $access_points = $stmt->fetchAll();
+    $access_points = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // ส่งข้อมูลกลับไปเป็น JSON
     echo json_encode([

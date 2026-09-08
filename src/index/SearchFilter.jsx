@@ -39,6 +39,7 @@ function SearchFilter({
 }) {
   const [isStatusOpen, setIsStatusOpen] = useState(false);
   const statusRef = useRef(null);
+  
 
   const hasFilterActive = searchTerm !== '' || selectedStatus !== 'All' || selectedBuilding !== 'All';
 
@@ -120,11 +121,11 @@ function SearchFilter({
           </div>
         </div>
 
-        {/* 2. อาคาร / สถานที่ */}
+        {/* 2. อาคาร */}
         <div>
           <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1 flex items-center gap-1">
             <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-            <span>อาคาร / สถานที่</span>
+            <span>อาคาร</span>
           </label>
           <select
             value={selectedBuilding}
@@ -132,7 +133,7 @@ function SearchFilter({
             className="w-full px-3 py-2 bg-slate-50/50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/80 rounded-xl text-xs text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-400 focus:bg-white dark:focus:bg-slate-800 transition-all cursor-pointer"
           >
             <option value="All" className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">
-              ทุกอาคารสถานที่
+              ทุกอาคาร
             </option>
             {buildings.map((building, index) => (
               <option 
@@ -179,40 +180,42 @@ function SearchFilter({
           </button>
 
           {/* รายการตัวเลือกแบบ Custom (พร้อม Animation) */}
-          <AnimatePresence>
-            {isStatusOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.15 }}
-                className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg py-1 overflow-hidden"
-              >
-                {STATUS_OPTIONS.map((option) => {
-                  const ItemIcon = option.icon;
-                  const isSelected = selectedStatus === option.value;
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => {
-                        setSelectedStatus(option.value);
-                        setIsStatusOpen(false);
-                      }}
-                      className={`w-full px-3 py-2 text-xs flex items-center gap-2.5 transition-colors cursor-pointer text-left ${
-                        isSelected
-                          ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-semibold'
-                          : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/50'
-                      }`}
-                    >
-                      <ItemIcon className={`w-4 h-4 stroke-[2.2] shrink-0 ${option.color}`} />
-                      <span>{option.label}</span>
-                    </button>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {/* รายการตัวเลือกแบบ Custom (พร้อม Animation) */}
+<AnimatePresence>
+  {isStatusOpen && (
+    <motion.div
+      initial={{ opacity: 0, y: -6 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -6 }}
+      transition={{ duration: 0.15 }}
+      /* ปรับปรุง Class ตรงนี้ */
+      className="absolute right-0 sm:left-0 z-50 w-full min-w-[240px] mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-xl shadow-2xl py-1 max-h-64 overflow-y-auto backdrop-blur-none"
+    >
+      {STATUS_OPTIONS.map((option) => {
+        const ItemIcon = option.icon;
+        const isSelected = selectedStatus === option.value;
+        return (
+          <button
+            key={option.value}
+            type="button"
+            onClick={() => {
+              setSelectedStatus(option.value);
+              setIsStatusOpen(false);
+            }}
+            className={`w-full px-3 py-2.5 text-xs flex items-center gap-2.5 transition-colors cursor-pointer text-left whitespace-nowrap ${
+              isSelected
+                ? 'bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 font-semibold'
+                : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <ItemIcon className={`w-4 h-4 stroke-[2.2] shrink-0 ${option.color}`} />
+            <span>{option.label}</span>
+          </button>
+        );
+      })}
+    </motion.div>
+  )}
+</AnimatePresence>
         </div>
 
       </div>

@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
-import { exportToPDF } from '../utils/exportPDF'; // 👈 Import ฟังก์ชัน PDF ใหม่
+import { exportToPDF } from '../utils/exportPDF';
 import Header from '../index/Header';
 import SummaryCharts from '../index/SummaryCharts';
 import SearchFilter from '../index/SearchFilter';
 import AccessPointList from '../index/AccessPointList';
+import Footer from '../index/Footer';
+import LoadingScreen from '../index/LoadingScreen';
 
 function Home() {
   const [accessPoints, setAccessPoints] = useState([]);
@@ -28,14 +30,18 @@ function Home() {
       } catch (error) {
         console.error('เกิดข้อผิดพลาดในการดึงข้อมูล AP:', error);
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        }, 500);
       }
     };
 
     fetchAccessPoints();
   }, []);
 
-  const buildings = [...new Set(accessPoints.map((ap) => ap.building).filter(Boolean))];
+  const buildings = Array.from(
+    new Set(accessPoints.map((item) => item.building).filter(Boolean))
+  );
 
   const filteredAccessPoints = accessPoints.filter((ap) => {
     const term = searchTerm.toLowerCase().trim();
@@ -89,7 +95,7 @@ function Home() {
     XLSX.writeFile(workbook, fileName);
   };
 
-  // Export PDF (เรียกใช้ระบบใหม่)
+  // Export PDF
   const handleExportPDF = () => {
     exportToPDF(filteredAccessPoints, {
       searchTerm,
@@ -98,12 +104,17 @@ function Home() {
     });
   };
 
+  // 2. ถ้ากำลังโหลดอยู่ แสดง LoadingScreen
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       <Header />
 
-      <main className="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
-        <SummaryCharts accessPoints={accessPoints} />
+    <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 space-y-6">
+      <SummaryCharts accessPoints={filteredAccessPoints} />
 
         <SearchFilter
           searchTerm={searchTerm}
@@ -125,6 +136,8 @@ function Home() {
           hasFilterActive={hasFilterActive}
         />
       </main>
+
+      <Footer />
     </div>
   );
 }
