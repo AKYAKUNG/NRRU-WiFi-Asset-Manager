@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Wifi, AlertTriangle, LogIn, Sun, Moon } from "lucide-react";
 import "./css/Header.css";
 
-const Header = ({ onReportIssueClick, onLoginClick }) => {
+const ManageHeader = ({ onReportIssueClick, onLoginClick }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) return savedTheme === "dark";
@@ -119,4 +119,4 @@ const Header = ({ onReportIssueClick, onLoginClick }) => {
   );
 };
 
-export default Header;
+export default ManageHeader;

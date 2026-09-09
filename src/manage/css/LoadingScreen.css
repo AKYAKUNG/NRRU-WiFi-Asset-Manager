@@ -1,0 +1,51 @@
+/* src/index/css/LoadingScreen.css */
+
+/* วงกลมหมุนรอบ Icon */
+.loader-spinner {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  border: 4px solid rgba(59, 130, 246, 0.15);
+  border-top-color: #3b82f6;
+  animation: spinner-rotate 1s linear infinite;
+}
+
+/* เอฟเฟกต์ Pulse & Glow สำหรับ Icon */
+.loader-icon-glow {
+  position: absolute;
+  padding: 0.75rem;
+  border-radius: 9999px;
+  animation: icon-pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Progress Bar แบบ Wave */
+.loader-progress-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #2563eb, #06b6d4, #3b82f6, #2563eb);
+  background-size: 200% 100%;
+  animation: progress-wave 1.8s ease-in-out infinite;
+}
+
+/* Animations */
+@keyframes spinner-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes icon-pulse-glow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+  }
+}
+
+@keyframes progress-wave {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

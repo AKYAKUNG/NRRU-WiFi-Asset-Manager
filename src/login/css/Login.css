@@ -1,0 +1,210 @@
+/* พื้นหลัง Dot Grid สไตล์ IT & Network */
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.18) 1.2px, transparent 1.2px);
+  background-size: 24px 24px;
+}
+
+.dark .bg-grid-pattern {
+  background-image: radial-gradient(rgba(99, 102, 241, 0.25) 1.2px, transparent 1.2px);
+}
+
+/* เอฟเฟกต์แสงวิ่งผ่านปุ่มเข้าสู่ระบบ (Shimmer) */
+.btn-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shimmer::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -75%;
+  width: 30%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent,
+    rgba(255, 255, 255, 0.35),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: all 0.75s ease;
+}
+
+.btn-shimmer:hover::after {
+  left: 135%;
+}
+
+/* Glassmorphism Card */
+.login-glass-card {
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Animation สำหรับการแจ้งเตือน */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInScale 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.input-icon {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s ease;
+}
+
+.input-wrapper:focus-within .input-icon {
+  color: #2563eb !important; /* blue-600 */
+  transform: translateY(-50%) scale(1.18) rotate(-6deg);
+}
+
+.dark .input-wrapper:focus-within .input-icon {
+  color: #60a5fa !important; /* blue-400 */
+}
+
+/* 2. กล่อง Input ยืดลอยขึ้น (Lift) + แสง Glow ฟุ้งรอบกล่อง */
+.interactive-input {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.interactive-input:focus {
+  transform: translateY(-2px);
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important; /* blue-500 */
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.18),
+    0 10px 20px -5px rgba(59, 130, 246, 0.2);
+}
+
+.dark .interactive-input:focus {
+  background-color: rgba(30, 41, 59, 0.9) !important; /* slate-800 */
+  border-color: #60a5fa !important; /* blue-400 */
+  box-shadow: 
+    0 0 0 4px rgba(96, 165, 250, 0.22),
+    0 10px 25px -5px rgba(59, 130, 246, 0.35);
+}
+
+/* 3. ข้อความ Label สว่างขึ้นและเปลี่ยนสีตาม Input ที่โฟกัส */
+.field-container:focus-within .field-label {
+  color: #2563eb;
+}
+
+.dark .field-container:focus-within .field-label {
+  color: #60a5fa;
+}
+
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: inputShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* 2. เส้นขอบด้านล่างขยายตัวออกจากตรงกลางเมื่อ Focus (Animated Border Line) */
+.animated-border-line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 2.5px;
+  background: linear-gradient(90deg, #3b82f6, #6366f1, #06b6d4);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.input-wrapper:focus-within .animated-border-line {
+  width: 100%;
+  left: 0%;
+}
+
+/* 3. จังหวะเรืองแสง Pulse เบาๆ เมื่อพิมพ์อยู่ */
+@keyframes glowPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35), 0 8px 16px -4px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.15), 0 12px 20px -4px rgba(59, 130, 246, 0.3);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.35), 0 8px 16px -4px rgba(59, 130, 246, 0.2);
+  }
+}
+
+.interactive-input:focus {
+  animation: glowPulse 2s infinite ease-in-out;
+  transform: translateY(-2px);
+  background-color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+.dark .interactive-input:focus {
+  background-color: rgba(30, 41, 59, 0.95) !important;
+  border-color: #60a5fa !important;
+}
+
+/* 4. อนิเมชันไอคอนเด้งดึ๋งเมื่อกดโฟกัส */
+.input-wrapper:focus-within .input-icon {
+  animation: iconPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  color: #2563eb !important;
+}
+
+.dark .input-wrapper:focus-within .input-icon {
+  color: #60a5fa !important;
+}
+
+@keyframes iconPop {
+  0% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.3) rotate(-10deg); }
+  100% { transform: translateY(-50%) scale(1.15) rotate(-4deg); }
+}
+
+/* ===== Fix Browser Autofill Background & Floating Label ===== */
+
+/* Light Mode: กลบสี Autofill ด้วยสีขาว */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #0f172a !important;
+  transition: background-color 50000s ease-in-out 0s;
+}
+
+/* Dark Mode: กลบสี Autofill ด้วยสีมืด (ตรงกับ bg-slate-900) */
+.dark input:-webkit-autofill,
+.dark input:-webkit-autofill:hover,
+.dark input:-webkit-autofill:focus,
+.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px #0f172a inset !important;
+  -webkit-text-fill-color: #f8fafc !important;
+}
+
+/* บังคับดัน Floating Label ขึ้นทันที เมื่อโฟกัส / มีข้อมูล / โดน Autofill */
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label,
+.floating-input:-webkit-autofill ~ .floating-label {
+  transform: translateY(-1.2rem) scale(0.85) !important;
+  left: 0 !important;
+  font-weight: 600 !important;
+  color: #2563eb !important;
+}
+
+.dark .floating-input:focus ~ .floating-label,
+.dark .floating-input:not(:placeholder-shown) ~ .floating-label,
+.dark .floating-input:-webkit-autofill ~ .floating-label {
+  color: #60a5fa !important;
+}
