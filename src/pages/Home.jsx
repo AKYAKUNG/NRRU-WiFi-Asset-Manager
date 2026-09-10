@@ -9,6 +9,7 @@ import SearchFilter from '../index/SearchFilter';
 import AccessPointList from '../index/AccessPointList';
 import Footer from '../index/Footer';
 import LoadingScreen from '../index/LoadingScreen';
+import ReportFormModal from "../report/ReportFormModal";
 
 function Home() {
   const [accessPoints, setAccessPoints] = useState([]);
@@ -17,6 +18,10 @@ function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedBuilding, setSelectedBuilding] = useState('All');
+
+  // State สำหรับจัดการ Pop-up แจ้งปัญหา
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [selectedAP, setSelectedAP] = useState(null);
 
   useEffect(() => {
     const fetchAccessPoints = async () => {
@@ -38,6 +43,17 @@ function Home() {
 
     fetchAccessPoints();
   }, []);
+
+  // ฟังก์ชันเปิด/ปิด Pop-up แจ้งปัญหา
+  const handleOpenReportModal = (ap) => {
+    setSelectedAP(ap);
+    setIsReportModalOpen(true);
+  };
+
+  const handleCloseReportModal = () => {
+    setIsReportModalOpen(false);
+    setSelectedAP(null);
+  };
 
   const buildings = Array.from(
     new Set(accessPoints.map((item) => item.building).filter(Boolean))
@@ -104,7 +120,6 @@ function Home() {
     });
   };
 
-  // 2. ถ้ากำลังโหลดอยู่ แสดง LoadingScreen
   if (loading) {
     return <LoadingScreen />;
   }
@@ -113,8 +128,8 @@ function Home() {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-300">
       <Header />
 
-    <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 space-y-6">
-      <SummaryCharts accessPoints={filteredAccessPoints} />
+      <main className="flex-1 max-w-[1600px] w-full mx-auto p-4 md:p-6 space-y-6">
+        <SummaryCharts accessPoints={filteredAccessPoints} />
 
         <SearchFilter
           searchTerm={searchTerm}
@@ -134,10 +149,21 @@ function Home() {
           totalCount={accessPoints.length}
           onResetFilters={handleResetFilters}
           hasFilterActive={hasFilterActive}
+          onReportIssue={handleOpenReportModal}
         />
       </main>
 
       <Footer />
+
+      {/* Pop-up Modal แจ้งปัญหา */}
+      <ReportFormModal
+        isOpen={isReportModalOpen}
+        onClose={handleCloseReportModal}
+        accessPoint={selectedAP}
+        onSubmitSuccess={() => {
+          alert("แจ้งปัญหาเรียบร้อยแล้ว");
+        }}
+      />
     </div>
   );
 }

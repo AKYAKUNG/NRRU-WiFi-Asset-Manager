@@ -1,80 +1,167 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // เพิ่มการนำเข้า useNavigate
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import * as XLSX from 'xlsx';
 import { exportToPDF } from '../utils/exportPDF';
 
-// Import Component ตามโครงสร้างไฟล์
 import ManageHeader from '../manage/ManageHeader';
 import ManageSummaryCharts from '../manage/ManageSummaryCharts';
 import ManageSearchFilter from '../manage/ManageSearchFilter';
 import ManageAccessPointList from '../manage/ManageAccessPointList';
 import ManageFooter from '../manage/ManageFooter';
 import ManageLoadingScreen from '../manage/ManageLoadingScreen';
+import EditAccessPointModal from '../manage/EditAccessPointModal';
 
 function Manage() {
   const navigate = useNavigate();
 
-  // 1. ตรวจสอบสิทธิ์การเข้าใช้งานทันทีเมื่อเปิดหน้า Manage (Protected Route)
+  // 1. ตรวจสอบสิทธิ์การเข้าใช้งาน
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const user = storedUser ? JSON.parse(storedUser) : null;
     const allowedRoles = ['Officer', 'Super Admin', 'Admin', 'Network Engineer'];
 
-    // ถ้าไม่มีข้อมูลการล็อกอิน หรือ Role ไม่ถูกต้อง ให้เด้งกลับไปหน้า Login
     if (!user || !allowedRoles.includes(user.role)) {
       alert('คุณไม่มีสิทธิ์เข้าถึงหน้านี้ กรุณาเข้าสู่ระบบก่อน');
       navigate('/login');
     }
   }, [navigate]);
 
-  // 2. State สำหรับจัดการข้อมูล Access Points
+  // 2. State จัดการข้อมูล
   const [accessPoints, setAccessPoints] = useState([]);
+  const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('All');
   const [selectedBuilding, setSelectedBuilding] = useState('All');
 
-  // 3. ดึงข้อมูล Access Points จาก PHP API
-  useEffect(() => {
-    const fetchAccessPoints = async () => {
-      try {
-        const response = await axios.get(
-          'http://localhost:81/db-NRRU-WiFi-Asset-Manager/get_access_points.php'
-        );
-        if (response.data.status === 'success' || response.data.success === true) {
-          setAccessPoints(response.data.data);
-        }
-      } catch (error) {
-        console.error('เกิดข้อผิดพลาดในการดึงข้อมูล AP:', error);
-      } finally {
-        setTimeout(() => {
-          setLoading(false);
-        }, 500);
-      }
-    };
+  // State สำหรับ Modal แก้ไขข้อมูล
+  const [selectedAp, setSelectedAp] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    fetchAccessPoints();
+  // 3. ฟังก์ชันดึงข้อมูล Access Points
+  const fetchAccessPoints = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:81/db-NRRU-WiFi-Asset-Manager/get_access_points.php'
+      );
+
+      let dataArray = [];
+      if (Array.isArray(response.data)) {
+        dataArray = response.data;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        dataArray = response.data.data;
+      }
+
+      setAccessPoints(dataArray);
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการดึงข้อมูล AP:', error);
+      setAccessPoints([]);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 500);
+    }
   }, []);
 
+  // ฟังก์ชันดึงข้อมูล Locations
+  const fetchLocations = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        'http://localhost:81/db-NRRU-WiFi-Asset-Manager/get_locations.php'
+      );
+
+      let dataArray = [];
+      if (Array.isArray(response.data)) {
+        dataArray = response.data;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        dataArray = response.data.data;
+      }
+
+      setLocations(dataArray);
+    } catch (error) {
+      console.error('เกิดข้อผิดพลาดในการดึงข้อมูล Locations:', error);
+      setLocations([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAccessPoints();
+    fetchLocations();
+  }, [fetchAccessPoints, fetchLocations]);
+
+  // 4. บันทึกการแก้ไขข้อมูล
+  const handleOpenEditModal = (ap) => {
+    setSelectedAp(ap);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+    setSelectedAp(null);
+  };
+
+  const handleSaveEdit = async (updatedData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(
+        'http://localhost:81/db-NRRU-WiFi-Asset-Manager/update_access_point.php',
+        updatedData
+      );
+
+      if (response.data.status === 'success' || response.data.success === true) {
+        fetchAccessPoints();
+        return true;
+      } else {
+        alert('เกิดข้อผิดพลาด: ' + (response.data.message || 'ไม่สามารถแก้ไขข้อมูลได้'));
+        return false;
+      }
+    } catch (error) {
+      console.error('Error updating AP:', error);
+      const serverMessage =
+        error.response?.data?.message || 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้';
+      alert(serverMessage);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const safeAccessPoints = Array.isArray(accessPoints) ? accessPoints : [];
+
   const buildings = Array.from(
-    new Set(accessPoints.map((item) => item.building).filter(Boolean))
+    new Set(safeAccessPoints.map((item) => item?.building).filter(Boolean))
   );
 
-  const filteredAccessPoints = accessPoints.filter((ap) => {
+  // Filter Logic
+  const filteredAccessPoints = safeAccessPoints.filter((ap) => {
+    if (!ap) return false;
+
     const term = searchTerm.toLowerCase().trim();
+    const brand = String(ap.brand || '').toLowerCase();
+    const model = String(ap.model || '').toLowerCase();
+    const installPoint = String(ap.installation_point || '').toLowerCase();
+    const ip = String(ap.ip_address || '').toLowerCase();
+    const mac = String(ap.mac_address || '').toLowerCase();
+    const assetCode = String(ap.asset_code || '').toLowerCase();
+    const responsible = String(ap.responsible_person || '').toLowerCase();
+
     const matchesSearch =
       term === '' ||
-      (ap.brand && ap.brand.toLowerCase().includes(term)) ||
-      (ap.model && ap.model.toLowerCase().includes(term)) ||
-      (ap.installation_point && ap.installation_point.toLowerCase().includes(term)) ||
-      (ap.ip_address && ap.ip_address.toLowerCase().includes(term)) ||
-      (ap.mac_address && ap.mac_address.toLowerCase().includes(term)) ||
-      (ap.asset_code && ap.asset_code.toLowerCase().includes(term));
+      brand.includes(term) ||
+      model.includes(term) ||
+      installPoint.includes(term) ||
+      ip.includes(term) ||
+      mac.includes(term) ||
+      assetCode.includes(term) ||
+      responsible.includes(term);
 
-    const matchesStatus = selectedStatus === 'All' || ap.connection_status === selectedStatus;
-    const matchesBuilding = selectedBuilding === 'All' || ap.building === selectedBuilding;
+    const matchesStatus =
+      selectedStatus === 'All' || ap.connection_status === selectedStatus;
+    const matchesBuilding =
+      selectedBuilding === 'All' || ap.building === selectedBuilding;
 
     return matchesSearch && matchesStatus && matchesBuilding;
   });
@@ -85,9 +172,10 @@ function Manage() {
     setSelectedBuilding('All');
   };
 
-  const hasFilterActive = searchTerm !== '' || selectedStatus !== 'All' || selectedBuilding !== 'All';
+  const hasFilterActive =
+    searchTerm !== '' || selectedStatus !== 'All' || selectedBuilding !== 'All';
 
-  // Export Excel
+  // Export Excel ครอบคลุมฟิลด์รายงานทั้งหมด
   const handleExportExcel = () => {
     if (filteredAccessPoints.length === 0) {
       alert('ไม่มีข้อมูลสำหรับส่งออก');
@@ -102,8 +190,11 @@ function Manage() {
       'IP Address': item.ip_address || '-',
       'MAC Address': item.mac_address || '-',
       'อาคาร': item.building || '-',
+      'ชั้น': item.floor ? `ชั้น ${item.floor}` : '-',
       'จุดติดตั้ง': item.installation_point || '-',
-      'สถานะ': item.connection_status || '-',
+      'สถานะการเชื่อมต่อ': item.connection_status || '-',
+      'ความเร็ว Link': item.current_link_speed || '-',
+      'ผู้รับผิดชอบ': item.responsible_person || '-',
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
@@ -116,6 +207,10 @@ function Manage() {
 
   // Export PDF
   const handleExportPDF = () => {
+    if (filteredAccessPoints.length === 0) {
+      alert('ไม่มีข้อมูลสำหรับส่งออก PDF');
+      return;
+    }
     exportToPDF(filteredAccessPoints, {
       searchTerm,
       selectedStatus,
@@ -123,7 +218,6 @@ function Manage() {
     });
   };
 
-  // แสดง LoadingScreen เมื่อกำลังโหลดข้อมูล
   if (loading) {
     return <ManageLoadingScreen />;
   }
@@ -150,13 +244,24 @@ function Manage() {
         <ManageAccessPointList
           loading={loading}
           filteredAccessPoints={filteredAccessPoints}
-          totalCount={accessPoints.length}
+          totalCount={safeAccessPoints.length}
           onResetFilters={handleResetFilters}
           hasFilterActive={hasFilterActive}
+          onEdit={handleOpenEditModal}
         />
       </main>
 
       <ManageFooter />
+
+      <EditAccessPointModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        apData={selectedAp}
+        onSave={handleSaveEdit}
+        isSubmitting={isSubmitting}
+        existingAccessPoints={safeAccessPoints}
+        locations={locations}
+      />
     </div>
   );
 }

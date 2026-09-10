@@ -1,9 +1,10 @@
+// src/components/Header.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Wifi, AlertTriangle, LogIn, Sun, Moon } from "lucide-react";
+import { Wifi, LogIn, Sun, Moon } from "lucide-react";
 import "./css/Header.css";
 
-const Header = ({ onReportIssueClick, onLoginClick }) => {
+const Header = ({ onLoginClick }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme) return savedTheme === "dark";
@@ -31,14 +32,14 @@ const Header = ({ onReportIssueClick, onLoginClick }) => {
     if (onLoginClick) {
       onLoginClick();
     }
-    navigate("/login"); // สั่งเปลี่ยนหน้าไปที่ /login ทันที
+    navigate("/login");
   };
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors duration-300">
       <div className="max-w-[1600px] w-full mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2">
         {/* LOGO & BRANDING */}
-        <div 
+        <div
           onClick={() => navigate("/")}
           className="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0"
         >
@@ -92,21 +93,11 @@ const Header = ({ onReportIssueClick, onLoginClick }) => {
             </span>
           </button>
 
-          {/* ปุ่มแจ้งปัญหา */}
-          <button
-            onClick={onReportIssueClick}
-            className="btn-header-shine btn-report-pulse bg-rose-600 hover:bg-rose-500 text-white border border-rose-500 p-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 active:scale-95 transition-all shadow-sm shadow-rose-500/20"
-          >
-            <AlertTriangle className="btn-icon-animate w-4 h-4 text-white stroke-[2.2]" />
-            <span className="hidden sm:inline whitespace-nowrap">
-              แจ้งปัญหา
-            </span>
-          </button>
-
           {/* ปุ่มเข้าสู่ระบบ */}
           <button
+            type="button"
             onClick={handleLogin}
-            className="btn-header-shine btn-login-hover bg-blue-600 hover:bg-blue-500 text-white p-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all duration-300"
+            className="btn-header-shine btn-login-hover bg-blue-600 hover:bg-blue-500 text-white p-2 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-1.5 transition-all duration-300 cursor-pointer"
           >
             <LogIn className="btn-icon-animate w-4 h-4 stroke-[2.2]" />
             <span className="hidden sm:inline whitespace-nowrap">

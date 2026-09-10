@@ -1,18 +1,18 @@
-import { Routes, Route } from 'react-router-dom';
+// src/App.jsx
+import { Routes, Route, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/login';
-import Manage from './pages/manage'; // 1. Import Component Manage ให้ถูกต้อง
+import Manage from './pages/manage';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
-    // 2. ใช้ <Routes> เพียงตัวเดียวครอบทุก Route
     <Routes>
-      {/* หน้าทั่วไป */}
+      {/* หน้าทั่วไป (Public Routes) */}
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
 
-      {/* หน้าที่ต้องผ่านการตรวจสอบสิทธิ์ก่อนเข้าถึง */}
+      {/* หน้าเฉพาะผู้ดูแลระบบ (Protected Routes) */}
       <Route
         element={
           <ProtectedRoute
@@ -22,7 +22,10 @@ function App() {
       >
         <Route path="/manage" element={<Manage />} />
       </Route>
-    </Routes> // 3. ปิด Tag </Routes> ให้เรียบร้อย
+
+      {/* เส้นทางที่ไม่พบ (Fallback / Redirection) */}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 

@@ -4,31 +4,43 @@
    1. HEADER BASE & GLASSMORPHISM (พื้นหลังกระจกฝ้า)
    ========================================================================== */
 .header-glass {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .dark .header-glass {
-  background: rgba(15, 23, 42, 0.85);
+  background: rgba(15, 23, 42, 0.82);
+  border-bottom-color: rgba(30, 41, 59, 0.8);
 }
 
 /* ==========================================================================
    2. BRANDING & LOGO ANIMATION (โลโก้ NRRU)
    ========================================================================== */
+.brand-nrru {
+  display: inline-block;
+  color: #0f172a;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+              letter-spacing 0.3s ease,
+              text-shadow 0.3s ease,
+              color 0.3s ease;
+  will-change: transform;
+}
 
 .dark .brand-nrru {
   color: #ffffff;
 }
 
 .group:hover .brand-nrru {
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   transform: translateY(-1px) scale(1.04);
   text-shadow: 0 0 12px rgba(37, 99, 235, 0.35);
 }
 
 .dark .group:hover .brand-nrru {
-  text-shadow: 0 0 14px rgba(255, 255, 255, 0.5);
+  text-shadow: 0 0 14px rgba(255, 255, 255, 0.45);
 }
 
 /* ==========================================================================
@@ -40,31 +52,38 @@
     transform: scale(1);
   }
   50% {
-    opacity: 0.5;
-    transform: scale(1.15);
+    opacity: 0.4;
+    transform: scale(1.25);
   }
 }
 
 .header-status-pulse {
   animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  will-change: transform, opacity;
 }
 
 /* ==========================================================================
-   4. DARK / LIGHT MODE TOGGLE SWITCHER (สวิตช์สลับธีม - ปุ่มแรกทางขวา)
+   4. DARK / LIGHT MODE TOGGLE SWITCHER (สวิตช์สลับธีม)
    ========================================================================== */
 .theme-toggle-btn {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 58px;
-  height: 32px;
-  padding: 4px;
+  width: 56px;
+  height: 30px;
+  padding: 3px;
   background-color: #e2e8f0;
   border-radius: 9999px;
   cursor: pointer;
   border: 1px solid #cbd5e1;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+.theme-toggle-btn:focus-visible {
+  ring: 2px solid #2563eb;
+  ring-offset: 2px;
 }
 
 .dark .theme-toggle-btn {
@@ -74,8 +93,8 @@
 
 .theme-toggle-thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
+  top: 2px;
+  left: 2px;
   width: 24px;
   height: 24px;
   background: #ffffff;
@@ -83,8 +102,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s;
+  will-change: transform;
 }
 
 .dark .theme-toggle-thumb {
@@ -102,6 +122,11 @@
 
 .theme-toggle-btn:hover {
   transform: scale(1.05);
+  border-color: #94a3b8;
+}
+
+.dark .theme-toggle-btn:hover {
+  border-color: #475569;
 }
 
 .theme-toggle-btn:active {
@@ -109,7 +134,7 @@
 }
 
 /* ==========================================================================
-   5. ACTION BUTTON ANIMATIONS (ปุ่มแจ้งปัญหา / ปุ่มเข้าสู่ระบบ)
+   5. ACTION BUTTON ANIMATIONS (ปุ่มแจ้งปัญหา / ปุ่มเข้าสู่ระบบ / ปุ่มออกจากระบบ)
    ========================================================================== */
 
 /* แสงวิ่งผ่านปุ่มเวลาชี้เมาส์ (Shimmer Shine Effect) */
@@ -128,12 +153,13 @@
   height: 200%;
   background: linear-gradient(
     60deg,
-    transparent,
-    rgba(255, 255, 255, 0.45),
-    transparent
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 80%
   );
   transform: rotate(30deg) translateY(-100%);
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none; /* ป้องกันไม่ให้รบกวนการคลิก */
 }
 
 .btn-header-shine:hover::after {
@@ -143,36 +169,52 @@
 /* ปุ่มแจ้งปัญหา: เงากะพริบเรียกร้องสายตา (Pulse Glow Alert) */
 @keyframes alert-glow {
   0%, 100% {
-    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.2);
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.25);
   }
   50% {
-    box-shadow: 0 0 14px 3px rgba(244, 63, 94, 0.35);
+    box-shadow: 0 0 16px 4px rgba(244, 63, 94, 0.4);
   }
 }
 
 .btn-report-pulse {
   animation: alert-glow 2.5s infinite ease-in-out;
+  will-change: box-shadow;
 }
 
-/* ปุ่มเข้าสู่ระบบ: ยกตัวนวล + เงารัศมีสีฟ้า (Blue Glow) */
+/* ปุ่มเข้าสู่ระบบ: ยกตัวนวล + เงารัศมีสีฟ้า */
 .btn-login-hover {
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .btn-login-hover:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 22px -4px rgba(37, 99, 235, 0.45);
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.45);
 }
 
 .btn-login-hover:active {
   transform: translateY(0) scale(0.97);
 }
 
-/* อนิเมชันไอคอนเด้ง/หมุนเล็กน้อยเวลาชี้เมาส์ที่ปุ่ม */
+/* แอนิเมชันไอคอนในปุ่ม */
 .btn-header-shine:hover .btn-icon-animate {
-  transform: scale(1.18) rotate(-10deg);
+  transform: scale(1.15) rotate(-8deg);
 }
 
 .btn-icon-animate {
-  transition: transform 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ==========================================================================
+   6. USER BADGE & LOGOUT STYLES (ส่วนแสดงชื่อผู้ใช้งานและปุ่ม Log Out)
+   ========================================================================== */
+.user-badge-hover {
+  transition: all 0.25s ease;
+}
+
+.user-badge-hover:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+}
+
+.dark .user-badge-hover:hover {
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 }
